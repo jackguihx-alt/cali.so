@@ -99,12 +99,18 @@ async function LastVisitorInfo() {
 }
 
 export async function Footer() {
-  const [subs] = await db
-    .select({
-      subCount: count(),
-    })
-    .from(subscribers)
-    .where(isNotNull(subscribers.subscribedAt))
+  let subs: { subCount: number } | undefined
+  try {
+    const result = await db
+      .select({
+        subCount: count(),
+      })
+      .from(subscribers)
+      .where(isNotNull(subscribers.subscribedAt))
+    subs = result[0]
+  } catch {
+    subs = { subCount: 0 }
+  }
 
   return (
     <footer className="mt-32">
@@ -116,8 +122,8 @@ export async function Footer() {
             </div>
             <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
               <p className="text-sm text-zinc-500/80 dark:text-zinc-400/80">
-                &copy; {new Date().getFullYear()} Cali Castle. 网站已开源：
-                <PeekabooLink href="https://github.com/CaliCastle/cali.so">
+                &copy; {new Date().getFullYear()} Huangxin Gui. 网站已开源：
+                <PeekabooLink href="https://github.com/jackguihx-alt/cali.so">
                   GitHub
                 </PeekabooLink>
               </p>
