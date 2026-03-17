@@ -27,7 +27,7 @@ export async function GET() {
       guid: post._id,
       url: `${seo.url.href}blog/${post.slug}`,
       description: post.description,
-      date: new Date(post.publishedAt),
+      date: new Date(post.publishedAt as string),
       enclosure: {
         url: post.mainImage.asset.url,
       },
