@@ -61,10 +61,11 @@ function Message({
             {parseDisplayName(message.userInfo ?? {})}
           </b>
           <time
-            dateTime={message.createdAt?.toString()}
+            dateTime={String(message.createdAt ?? '')}
             className="inline-flex select-none text-[12px] font-medium opacity-40"
           >
-            {dayjs(message.createdAt as string | Date).locale('zh-cn').fromNow()}
+            {/* eslint-disable-next-line @typescript-eslint/no-unsafe-argument */}
+            {dayjs(message.createdAt).locale('zh-cn').fromNow()}
           </time>
           {currentUserId && currentUserId === message.userId && (
             <button
