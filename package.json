@@ -106,5 +106,12 @@
     "tailwindcss": "^3.4.1",
     "turbo": "^1.12.5",
     "typescript": "^5.4.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "es5-ext",
+      "unrs-resolver"
+    ]
   }
 }
