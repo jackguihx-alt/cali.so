@@ -1,7 +1,6 @@
 'use client'
 
 import { SignInButton, useUser } from '@clerk/nextjs'
-import { UserArrowLeftIcon } from '~/assets'
 import { clsxm } from '@zolplay/utils'
 import {
   AnimatePresence,
@@ -16,7 +15,7 @@ import { useReward } from 'react-rewards'
 import TextareaAutosize from 'react-textarea-autosize'
 
 import { signBook } from '~/app/(main)/guestbook/guestbook.state'
-import { EyeCloseIcon, EyeOpenIcon, TiltedSendIcon } from '~/assets'
+import { EyeCloseIcon, EyeOpenIcon, TiltedSendIcon, UserArrowLeftIcon } from '~/assets'
 import { CommentMarkdown } from '~/components/CommentMarkdown'
 import { RichLink } from '~/components/links/RichLink'
 import { ElegantTooltip } from '~/components/ui/Tooltip'
@@ -71,7 +70,7 @@ export function GuestbookInput() {
       })
       const data = await res.json()
       if (!res.ok) {
-        throw new Error(data?.error ?? '发送失败，请稍后再试')
+        throw new Error((data as { error?: string })?.error ?? '发送失败，请稍后再试')
       }
       return data as GuestbookDto
     },

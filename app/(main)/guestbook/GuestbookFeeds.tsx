@@ -64,7 +64,7 @@ function Message({
             dateTime={message.createdAt?.toString()}
             className="inline-flex select-none text-[12px] font-medium opacity-40"
           >
-            {dayjs(message.createdAt).locale('zh-cn').fromNow()}
+            {dayjs(message.createdAt as string | Date).locale('zh-cn').fromNow()}
           </time>
           {currentUserId && currentUserId === message.userId && (
             <button
