@@ -1,11 +1,5 @@
-import { SignUp } from '@clerk/nextjs'
-
-import { Container } from '~/components/ui/Container'
+import { redirect } from 'next/navigation'
 
 export default function Page() {
-  return (
-    <Container className="mt-24 flex items-center justify-center">
-      <SignUp />
-    </Container>
-  )
+  redirect('/')
 }

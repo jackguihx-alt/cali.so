@@ -1,11 +1,19 @@
 import { createClient } from 'next-sanity'
 
-import { apiVersion, dataset, projectId, useCdn } from '../env'
+import { apiVersion, dataset, hasSanityConfig, projectId, useCdn } from '../env'
 
-export const client = createClient({
-  apiVersion,
-  dataset,
-  projectId,
-  useCdn,
-  // perspective: 'published',
-})
+type SanityLikeClient = {
+  fetch: <T>(query: string, params?: Record<string, unknown>) => Promise<T | null>
+}
+
+export const client: SanityLikeClient = hasSanityConfig
+  ? createClient({
+      apiVersion,
+      dataset,
+      projectId,
+      useCdn,
+      // perspective: 'published',
+    })
+  : {
+      fetch: async () => null,
+    }

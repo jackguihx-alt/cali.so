@@ -15,7 +15,7 @@ import { comments } from '~/db/schema'
 import NewReplyCommentEmail from '~/emails/NewReplyComment'
 import { env } from '~/env.mjs'
 import { url } from '~/lib'
-import { resend } from '~/lib/mail'
+import { getResend } from '~/lib/mail'
 import { redis } from '~/lib/redis'
 import { client } from '~/sanity/lib/client'
 
@@ -137,6 +137,7 @@ export async function POST(req: NextRequest, { params }: Params) {
           (emailAddress) => emailAddress.id === primaryEmailAddressId
         )
         if (primaryEmailAddress) {
+          const resend = getResend()
           await resend.emails.send({
             from: emailConfig.from,
             to: primaryEmailAddress.emailAddress,

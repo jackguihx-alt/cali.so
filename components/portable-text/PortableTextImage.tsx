@@ -7,9 +7,6 @@ import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
 import React from 'react'
 
-import { ClientOnly } from '~/components/ClientOnly'
-import { Commentable } from '~/components/Commentable'
-
 export function PortableTextImage({
   value,
 }: PortableTextComponentProps<{
@@ -31,10 +28,6 @@ export function PortableTextImage({
 
   return (
     <div data-blockid={value._key} className="group relative pr-3 md:pr-0">
-      <ClientOnly>
-        <Commentable className="z-30" blockId={value._key} />
-      </ClientOnly>
-
       <Dialog.Root open={isZoomed} onOpenChange={setIsZoomed}>
         {isZoomed && (
           <div

@@ -10,7 +10,7 @@ import { db } from '~/db'
 import { newsletters, subscribers } from '~/db/schema'
 import NewslettersTemplate from '~/emails/NewslettersTemplate'
 import { env } from '~/env.mjs'
-import { resend } from '~/lib/mail'
+import { getResend } from '~/lib/mail'
 
 extendDateTime({
   timezone: true,
@@ -40,6 +40,7 @@ export default function CreateNewsletterPage() {
         .map((sub) => sub.email),
     ])
 
+    const resend = getResend()
     await resend.emails.send({
       subject: data.subject,
       from: emailConfig.from,

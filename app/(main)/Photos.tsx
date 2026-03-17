@@ -5,11 +5,17 @@ import Image from 'next/image'
 import React from 'react'
 
 export function Photos({ photos }: { photos: string[] }) {
+  const validPhotos = photos.filter(Boolean)
   const [width, setWidth] = React.useState(0)
   const [isCompact, setIsCompact] = React.useState(false)
   const expandedWidth = React.useMemo(() => width * 1.38, [width])
 
   React.useEffect(() => {
+    if (validPhotos.length === 0) {
+      setWidth(0)
+      return
+    }
+
     const handleResize = () => {
       // 640px is the breakpoint for md
       if (window.innerWidth < 640) {
@@ -17,7 +23,7 @@ export function Photos({ photos }: { photos: string[] }) {
         return setWidth(window.innerWidth / 2 - 64)
       }
 
-      setWidth(window.innerWidth / photos.length - 4 * photos.length)
+      setWidth(window.innerWidth / validPhotos.length - 4 * validPhotos.length)
     }
 
     window.addEventListener('resize', handleResize)
@@ -26,7 +32,11 @@ export function Photos({ photos }: { photos: string[] }) {
     return () => {
       window.removeEventListener('resize', handleResize)
     }
-  }, [photos.length])
+  }, [validPhotos.length])
+
+  if (validPhotos.length === 0) {
+    return null
+  }
 
   return (
     <motion.div
@@ -39,7 +49,7 @@ export function Photos({ photos }: { photos: string[] }) {
       }}
     >
       <div className="-my-4 flex w-full snap-x snap-proximity scroll-pl-4 justify-start gap-4 overflow-x-auto px-4 py-4 sm:gap-6 md:justify-center md:overflow-x-hidden md:px-0">
-        {photos.map((image, idx) => (
+        {validPhotos.map((image, idx) => (
           <motion.div
             key={idx}
             className="relative h-40 flex-none shrink-0 snap-start overflow-hidden rounded-xl bg-zinc-100 ring-2 ring-lime-800/20 dark:bg-zinc-800 dark:ring-lime-300/10 md:h-72 md:rounded-3xl"

@@ -1,5 +1,4 @@
-import { type Metadata } from 'next'
-import Balancer from 'react-wrap-balancer'
+import { Suspense } from 'react'
 
 import { Container } from '~/components/ui/Container'
 import { fetchGuestbookMessages } from '~/db/queries/guestbook'
@@ -9,23 +8,25 @@ import { Guestbook } from './Guestbook'
 const title = '留言墙'
 const description =
   '在这里，你可以留下你想对我说的话，或是你的建议，或是你的想法，或是你的批评，或是你的赞美，或是你的鼓励，或是你的吐槽。'
+
 export const metadata = {
   title,
   description,
-  openGraph: {
-    title,
-    description,
-  },
-  twitter: {
-    title,
-    description,
-    card: 'summary_large_image',
-  },
-} satisfies Metadata
+  openGraph: { title, description },
+  twitter: { title, description, card: 'summary_large_image' },
+}
 
-export default async function GuestBookPage() {
-  const messages = await fetchGuestbookMessages()
+async function GuestbookContent() {
+  let messages = []
+  try {
+    messages = await fetchGuestbookMessages()
+  } catch {
+    // DB might not be configured in dev
+  }
+  return <Guestbook messages={messages} />
+}
 
+export default function GuestBookPage() {
   return (
     <Container className="mt-16 sm:mt-32">
       <header className="max-w-2xl">
@@ -33,11 +34,17 @@ export default async function GuestBookPage() {
           欢迎来到我的留言墙
         </h1>
         <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
-          <Balancer>{description}</Balancer>
+          {description}
         </p>
       </header>
-      <div className="mt-16 sm:mt-20">
-        <Guestbook messages={messages} />
+      <div className="mt-12">
+        <Suspense
+          fallback={
+            <div className="h-[52px] animate-pulse rounded-full bg-zinc-800/10 dark:bg-zinc-100/10" />
+          }
+        >
+          <GuestbookContent />
+        </Suspense>
       </div>
     </Container>
   )

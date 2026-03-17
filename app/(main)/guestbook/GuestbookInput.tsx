@@ -1,6 +1,7 @@
 'use client'
 
-import { useUser } from '@clerk/nextjs'
+import { SignInButton, useUser } from '@clerk/nextjs'
+import { UserArrowLeftIcon } from '~/assets'
 import { clsxm } from '@zolplay/utils'
 import {
   AnimatePresence,
@@ -25,7 +26,7 @@ const MAX_MESSAGE_LENGTH = 600
 const REWARDS_ID = 'guestbook-rewards'
 
 export function GuestbookInput() {
-  const { user } = useUser()
+  const { user, isLoaded } = useUser()
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
   const [message, setMessage] = React.useState('')
   const [isPreviewing, setIsPreviewing] = React.useState(false)
@@ -68,8 +69,11 @@ export function GuestbookInput() {
           message,
         }),
       })
-      const data: GuestbookDto = await res.json()
-      return data
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data?.error ?? '发送失败，请稍后再试')
+      }
+      return data as GuestbookDto
     },
     {
       onSuccess: (data) => {
@@ -108,9 +112,23 @@ export function GuestbookInput() {
   )
   const background = useMotionTemplate`radial-gradient(320px circle at ${mouseX}px ${mouseY}px, var(--spotlight-color) 0%, transparent 85%)`
 
+  if (!isLoaded) {
+    return (
+      <div className="h-[52px] animate-pulse rounded-full bg-zinc-800/10 dark:bg-zinc-100/10" />
+    )
+  }
+
   if (!user) {
     return (
-      <div className="h-[82px] animate-pulse rounded-xl bg-white/70 ring-2 ring-zinc-200/30 dark:bg-zinc-800/80 dark:ring-zinc-700/30" />
+      <SignInButton mode="modal">
+        <button
+          type="button"
+          className="flex items-center gap-2.5 rounded-full bg-zinc-800 px-5 py-3 text-sm font-medium text-white shadow-md transition hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+        >
+          <UserArrowLeftIcon className="h-5 w-5 shrink-0" />
+          登录后才可以留言噢
+        </button>
+      </SignInButton>
     )
   }
 

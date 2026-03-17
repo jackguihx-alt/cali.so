@@ -9,7 +9,7 @@ import { subscribers } from '~/db/schema'
 import ConfirmSubscriptionEmail from '~/emails/ConfirmSubscription'
 import { env } from '~/env.mjs'
 import { url } from '~/lib'
-import { resend } from '~/lib/mail'
+import { getResend } from '~/lib/mail'
 import { redis } from '~/lib/redis'
 
 const newsletterFormSchema = z.object({
@@ -47,6 +47,7 @@ export async function POST(req: NextRequest) {
     const token = crypto.randomUUID()
 
     if (env.NODE_ENV === 'production') {
+      const resend = getResend()
       await resend.emails.send({
         from: emailConfig.from,
         to: parsed.email,

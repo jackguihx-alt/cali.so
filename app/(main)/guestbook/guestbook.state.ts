@@ -16,3 +16,10 @@ export function signBook(message: GuestbookDto) {
   // insert message at index 0
   guestbookState.messages.splice(0, 0, message)
 }
+
+export function deleteMessage(id: string) {
+  const idx = guestbookState.messages.findIndex((m) => m.id === id)
+  if (idx !== -1) {
+    guestbookState.messages.splice(idx, 1)
+  }
+}

@@ -2,6 +2,7 @@ import * as cheerio from 'cheerio'
 import { ImageResponse } from 'next/og'
 import { type NextRequest, NextResponse } from 'next/server'
 
+import { env } from '~/env.mjs'
 import { ratelimit, redis } from '~/lib/redis'
 
 export const runtime = 'edge'
@@ -33,6 +34,7 @@ function getPredefinedIconForUrl(url: string): string | undefined {
 
 const width = 32
 const height = width
+
 function renderFavicon(url: string) {
   return new ImageResponse(
     (
@@ -47,29 +49,36 @@ function renderFavicon(url: string) {
 }
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url)
+  const requestUrl = new URL(req.url)
+  const { searchParams } = requestUrl
   const url = searchParams.get('url')
+  const redisEnabled =
+    !!env.UPSTASH_REDIS_REST_URL && !!env.UPSTASH_REDIS_REST_TOKEN
 
   if (!url) {
     return NextResponse.error()
   }
 
-  const { success } = await ratelimit.limit('favicon' + `_${req.ip ?? ''}`)
-  if (!success) {
-    return NextResponse.error()
+  if (redisEnabled) {
+    const { success } = await ratelimit.limit('favicon' + `_${req.ip ?? ''}`)
+    if (!success) {
+      return NextResponse.error()
+    }
   }
 
-  let iconUrl = '/favicon_blank.png'
+  let iconUrl = new URL('/favicon_blank.png', requestUrl.origin).href
 
   try {
     const predefinedIcon = getPredefinedIconForUrl(url)
     if (predefinedIcon) {
-      return renderFavicon(predefinedIcon)
+      return renderFavicon(new URL(predefinedIcon, requestUrl.origin).href)
     }
 
-    const cachedFavicon = await redis.get<string>(getKey(url))
-    if (cachedFavicon) {
-      return renderFavicon(cachedFavicon)
+    if (redisEnabled) {
+      const cachedFavicon = await redis.get<string>(getKey(url))
+      if (cachedFavicon) {
+        return renderFavicon(cachedFavicon)
+      }
     }
 
     const res = await fetch(new URL(`https://${url}`).href, {
@@ -91,14 +100,18 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    await redis.set(getKey(url), iconUrl, { ex: revalidate })
+    if (redisEnabled) {
+      await redis.set(getKey(url), iconUrl, { ex: revalidate })
+    }
 
     return renderFavicon(iconUrl)
   } catch (e) {
     console.error(e)
   }
 
-  await redis.set(getKey(url), iconUrl, { ex: revalidate })
+  if (redisEnabled) {
+    await redis.set(getKey(url), iconUrl, { ex: revalidate })
+  }
 
   return renderFavicon(iconUrl)
 }

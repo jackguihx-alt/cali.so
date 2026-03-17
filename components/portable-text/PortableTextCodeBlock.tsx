@@ -6,7 +6,6 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 
 import { ClipboardCheckIcon, ClipboardDataIcon } from '~/assets'
 import { ClientOnly } from '~/components/ClientOnly'
-import { Commentable } from '~/components/Commentable'
 import { ElegantTooltip } from '~/components/ui/Tooltip'
 
 export function PortableTextCodeBlock({
@@ -38,9 +37,6 @@ export function PortableTextCodeBlock({
       data-filename={value.filename}
       className="group relative mr-3 rounded-3xl border border-[--tw-prose-pre-border] dark:bg-zinc-800/80 md:mr-0"
     >
-      <ClientOnly>
-        <Commentable className="z-30 -mr-1.5 md:mr-0" blockId={value._key} />
-      </ClientOnly>
       <ClientOnly>
         <>
           <div className="relative flex text-xs leading-6 text-slate-400">

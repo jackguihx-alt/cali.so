@@ -116,9 +116,10 @@ export default defineType({
       type: 'code',
       name: 'codeBlock',
       title: '代码块',
+      // The plugin supports this option, but the shipped Sanity types here don't expose it.
       options: {
         withFilename: true,
-      },
+      } as any,
     }),
   ],
 })
